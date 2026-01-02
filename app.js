@@ -77,23 +77,34 @@ function deleteProduct(i){
   }
 }
 
-// ==== تولید فاکتور ====
+// ==== تولید فاکتور متن مرتب ====
 function generateInvoice(){
   const customer = document.getElementById("customer").value;
   const date = document.getElementById("date").value;
-  let textInvoice = `[تراشکاری عساکره]      [فاکتور]\n--------------------------------\nنام مشتری: ${customer}   تاریخ: ${date}\n--------------------------------\nردیف   محصول           قیمت (ریال)\n`;
+
+  let textInvoice = `[تراشکاری عساکره]      [فاکتور]\n`;
+  textInvoice += `------------------------------------------\n`;
+  textInvoice += `نام مشتری: ${customer}        تاریخ: ${date}\n`;
+  textInvoice += `------------------------------------------\n`;
+  textInvoice += `ردیف       محصول                  قیمت (ریال)\n`;
+  textInvoice += `------------------------------------------\n`;
+
   let sum = 0;
   let row = 1;
 
   products.forEach(p=>{
     if(p.checked){
-      textInvoice += `${row}-${p.name}   ${p.price.toLocaleString()}\n`; // خط فاصله بین ردیف و محصول
+      // خط فاصله بین ردیف و محصول + ستون های تقریبا موازی
+      const rowStr = `${row}-`.padEnd(10,' ') + `${p.name}`.padEnd(25,' ') + `${p.price.toLocaleString()}`.padStart(10,' ');
+      textInvoice += rowStr + '\n';
       sum += p.price;
       row++;
     }
   });
 
-  textInvoice += `--------------------------------\nمجموع: ${sum.toLocaleString()} ریال`;
+  textInvoice += `------------------------------------------\n`;
+  textInvoice += `مجموع: ${sum.toLocaleString()} ریال`;
+
   document.getElementById("invoice").innerText = textInvoice;
 }
 
@@ -103,5 +114,5 @@ function sendSMS(){
   window.location.href = "sms:?body=" + encodeURIComponent(text);
 }
 
-// ==== شروع رندر اولیه ====
+// ==== رندر اولیه ====
 render();
