@@ -60,3 +60,20 @@ pre {
   white-space: pre-wrap;
   overflow-x: auto;
 }
+
+.product button {
+  background: #444;       /* رنگ تیره‌تر برای جمع‌وجور بودن */
+  color: white;
+  border: none;
+  padding: 2px 6px;       /* کوچک‌تر */
+  margin-left: 4px;
+  font-size: 14px;        /* کوچک‌تر از قبل */
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.product button:hover {
+  background: #10a37f;    /* رنگ سبز روشن هنگام هاور */
+}
+
+
