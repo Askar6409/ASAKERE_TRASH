@@ -33,24 +33,54 @@ input {
 }
 
 button {
-  background: #10a37f;
-  border: none;
-  padding: 10px;
-  margin-top: 10px;
-  color: white;
   cursor: pointer;
-  width: 100%;
-  font-size: 16px;
 }
 
 .invoice-btn {
   background: #3ea6ff;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  color: white;
+  font-size: 16px;
+  margin-top: 10px;
+  border-radius: 5px;
 }
 
+/* لیست محصولات */
 .product {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 6px;
+  background: #111;
+  padding: 5px 8px;
+  border-radius: 4px;
+}
+
+.product label {
+  flex: 1; /* نام محصول فضای بیشتری بگیرد */
+  display: flex;
+  align-items: center;
+}
+
+/* دکمه‌های ویرایش و حذف کوچک و جمع‌وجور */
+.actions button {
+  background: #444;
+  color: white;
+  border: none;
+  padding: 2px 5px;
+  font-size: 12px;
+  margin-left: 4px;
+  border-radius: 3px;
+}
+
+.actions button:hover {
+  background: #10a37f;
+}
+
+span {
+  margin-left: 10px;
 }
 
 pre {
@@ -60,20 +90,3 @@ pre {
   white-space: pre-wrap;
   overflow-x: auto;
 }
-
-.product button {
-  background: #444;       /* رنگ تیره‌تر برای جمع‌وجور بودن */
-  color: white;
-  border: none;
-  padding: 2px 6px;       /* کوچک‌تر */
-  margin-left: 4px;
-  font-size: 14px;        /* کوچک‌تر از قبل */
-  cursor: pointer;
-  border-radius: 3px;
-}
-
-.product button:hover {
-  background: #10a37f;    /* رنگ سبز روشن هنگام هاور */
-}
-
-
