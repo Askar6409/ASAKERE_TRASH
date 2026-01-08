@@ -1,92 +1,85 @@
-@font-face {
-  font-family: 'Vazir';
-  src: url('fonts/Vazir.woff2') format('woff2'),
-       url('fonts/Vazir.woff') format('woff');
-}
-
 body {
-  font-family: 'Vazir', sans-serif;
-  background: #0a0a0a;
-  color: #eee;
+  background: #0f0f0f;
+  color: #fff;
+  font-family: sans-serif;
   margin: 0;
-  padding: 0;
 }
 
 .app {
-  max-width: 480px;
+  max-width: 420px;
   margin: auto;
-  padding: 20px;
+  padding: 16px;
 }
 
-input {
-  width: 48%;
-  padding: 8px;
-  background: #1e1e1e;
-  color: white;
-  border: none;
-  margin-bottom: 10px;
+h1, h2 {
+  text-align: center;
 }
 
-.row {
-  display: flex;
-  justify-content: space-between;
-}
-
-button {
-  cursor: pointer;
-}
-
-.invoice-btn {
-  background: #3ea6ff;
-  border: none;
-  padding: 10px;
-  width: 100%;
-  color: white;
-  font-size: 16px;
-  margin-top: 10px;
-  border-radius: 5px;
-}
-
-/* لیست محصولات */
 .product {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-  background: #111;
-  padding: 5px 8px;
-  border-radius: 4px;
+  background: #1a1a1a;
+  margin-bottom: 8px;
+  padding: 8px;
+  border-radius: 8px;
 }
 
-.product label {
-  flex: 1; /* نام محصول فضای بیشتری بگیرد */
+.drag {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  margin-left: 6px;
+  opacity: .5;
 }
 
-/* دکمه‌های ویرایش و حذف کوچک و جمع‌وجور */
-.actions button {
-  background: #444;
-  color: white;
+.drag span {
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.info {
+  flex: 1;
+  margin-left: 8px;
+}
+
+.qty {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.qty button {
+  width: 26px;
+}
+
+.qty.disabled {
+  opacity: .3;
+}
+
+.price {
+  width: 90px;
+  text-align: center;
+}
+
+.total {
+  text-align: center;
+  margin: 16px 0;
+  font-size: 18px;
+}
+
+.issue {
+  width: 100%;
+  padding: 12px;
+  background: #fff;
+  color: #000;
   border: none;
-  padding: 2px 5px;
-  font-size: 12px;
-  margin-left: 4px;
-  border-radius: 3px;
+  border-radius: 8px;
+  font-size: 16px;
 }
 
-.actions button:hover {
-  background: #10a37f;
-}
-
-span {
-  margin-left: 10px;
-}
-
-pre {
-  background: #111;
-  padding: 10px;
-  margin-top: 15px;
-  white-space: pre-wrap;
-  overflow-x: auto;
+.history-item {
+  background: #1a1a1a;
+  padding: 8px;
+  margin-top: 6px;
+  border-radius: 6px;
+  font-size: 14px;
 }
