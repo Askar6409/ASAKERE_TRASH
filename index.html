@@ -1,16 +1,79 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>Invoice</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فاکتور</title>
 
-<div class="app">
+<style>
+body{
+  margin:0;
+  background:#000;
+  color:#fff;
+  font-family:tahoma;
+}
+.container{
+  max-width:500px;
+  margin:auto;
+  padding:20px;
+}
+h1,h2{text-align:center;}
+.service-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:#111;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+.reorder{
+  display:flex;
+  flex-direction:column;
+  font-size:12px;
+  cursor:pointer;
+}
+.service-name{
+  flex:1;
+}
+input[type="number"]{
+  width:55px;
+  background:#000;
+  color:#fff;
+  border:1px solid #333;
+  border-radius:6px;
+  text-align:center;
+}
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+}
+button.issue{
+  background:#fff;
+  color:#000;
+}
+.history-item{
+  background:#111;
+  border-radius:10px;
+  padding:10px;
+  margin-top:8px;
+  font-size:14px;
+}
+.total{
+  text-align:center;
+  margin:15px 0;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
   <h1>فاکتور</h1>
 
-  <div id="products"></div>
+  <div id="services"></div>
 
   <div class="total">
     مجموع: <span id="total">0</span> ریال
@@ -22,6 +85,105 @@
   <div id="history"></div>
 </div>
 
-<script src="App.js"></script>
+<script>
+// =====================
+// DATA
+// =====================
+let services = [
+ {id:1,name:"شستشو سرسیلندر",price:4000000,qty:1,checked:false},
+ {id:2,name:"آبندی 8 سوپاپ",price:7000000,qty:1,checked:false},
+ {id:3,name:"کف‌تراشی",price:5000000,qty:1,checked:false}
+];
+
+let invoiceNo = Number(localStorage.getItem("invNo")) || 1;
+let history = JSON.parse(localStorage.getItem("history")) || [];
+
+// =====================
+const format = n => n.toLocaleString("fa-IR");
+
+function total(){
+ return services.reduce((s,x)=>x.checked?s+x.price*x.qty:s,0);
+}
+
+// =====================
+function render(){
+ const box=document.getElementById("services");
+ box.innerHTML="";
+ services.forEach((s,i)=>{
+  box.innerHTML+=`
+  <div class="service-row">
+    <div class="reorder">
+      <div onclick="up(${i})">▴</div>
+      <div onclick="down(${i})">▾</div>
+    </div>
+    <input type="checkbox" ${s.checked?"checked":""} onchange="toggle(${s.id})">
+    <div class="service-name">${s.name}</div>
+    <input type="number" min="1" value="${s.qty}" onchange="qty(${s.id},this.value)">
+    <div>${format(s.price*s.qty)}</div>
+  </div>`;
+ });
+ document.getElementById("total").innerText=format(total());
+}
+
+function toggle(id){
+ const s=services.find(x=>x.id===id);
+ s.checked=!s.checked;
+ render();
+}
+
+function qty(id,v){
+ const s=services.find(x=>x.id===id);
+ s.qty=Number(v)||1;
+ render();
+}
+
+function up(i){
+ if(i===0)return;
+ [services[i],services[i-1]]=[services[i-1],services[i]];
+ render();
+}
+
+function down(i){
+ if(i===services.length-1)return;
+ [services[i],services[i+1]]=[services[i+1],services[i]];
+ render();
+}
+
+// =====================
+function issueInvoice(){
+ if(total()===0){alert("خدمتی انتخاب نشده");return;}
+
+ history.unshift({
+  no:invoiceNo,
+  date:new Date().toLocaleDateString("fa-IR"),
+  total:total()
+ });
+
+ invoiceNo++;
+ localStorage.setItem("invNo",invoiceNo);
+ localStorage.setItem("history",JSON.stringify(history));
+
+ services.forEach(s=>{s.checked=false;s.qty=1});
+ renderHistory();
+ render();
+}
+
+// =====================
+function renderHistory(){
+ const h=document.getElementById("history");
+ h.innerHTML="";
+ history.forEach(i=>{
+  h.innerHTML+=`
+   <div class="history-item">
+    فاکتور #${i.no} – ${i.date}<br>
+    ${format(i.total)} ریال
+   </div>`;
+ });
+}
+
+// INIT
+render();
+renderHistory();
+</script>
 </body>
 </html>
