@@ -1,108 +1,147 @@
-let products = JSON.parse(localStorage.getItem("products")) || [
-  { name: "شستشو سرسیلندر", price: 3000000, qty: 1, checked: false },
-  { name: "آب‌بندی سوپاپ", price: 7000000, qty: 1, checked: false }
+// =====================
+// Invoice App - App.js
+// =====================
+
+// خدمات اولیه
+let services = [
+  { id: 1, name: "شستشو سرسیلندر", price: 3000000, qty: 1, checked: false },
+  { id: 2, name: "آب‌بندی سوپاپ", price: 7000000, qty: 1, checked: false },
+  { id: 3, name: "تراش سرسیلندر", price: 5000000, qty: 1, checked: false }
 ];
 
+// شماره فاکتور
 let invoiceNumber = Number(localStorage.getItem("invoiceNumber")) || 1;
-let history = JSON.parse(localStorage.getItem("history")) || [];
+let history = JSON.parse(localStorage.getItem("invoiceHistory")) || [];
 
+// =====================
+// Helpers
+// =====================
+const formatPrice = n => n.toLocaleString("fa-IR");
+
+const getTotal = () =>
+  services.reduce(
+    (sum, s) => s.checked ? sum + s.price * s.qty : sum,
+    0
+  );
+
+// =====================
+// Render
+// =====================
 function render() {
-  const box = document.getElementById("products");
-  box.innerHTML = "";
+  const list = document.getElementById("services");
+  const totalEl = document.getElementById("total");
 
-  let total = 0;
+  list.innerHTML = "";
 
-  products.forEach((p, i) => {
-    if (p.checked) total += p.price * p.qty;
+  services.forEach((s, index) => {
+    const row = document.createElement("div");
+    row.className = "service-row";
 
-    box.innerHTML += `
-      <div class="product">
-        <div class="drag">
-          <span onclick="moveUp(${i})">≡</span>
-          <span onclick="moveDown(${i})">≡</span>
-        </div>
-
-        <input type="checkbox" ${p.checked ? "checked" : ""}
-          onchange="toggle(${i})">
-
-        <div class="info">
-          <div>${i + 1}- ${p.name}</div>
-
-          <div class="qty ${p.checked ? "" : "disabled"}">
-            <button onclick="qty(${i},-1)" ${!p.checked ? "disabled" : ""}>−</button>
-            <span>${p.qty}</span>
-            <button onclick="qty(${i},1)" ${!p.checked ? "disabled" : ""}>+</button>
-          </div>
-        </div>
-
-        <div class="price">
-          ${(p.price * p.qty).toLocaleString()}
-        </div>
+    row.innerHTML = `
+      <div class="reorder">
+        <span onclick="moveUp(${index})">▴</span>
+        <span onclick="moveDown(${index})">▾</span>
       </div>
+
+      <input type="checkbox" ${s.checked ? "checked" : ""}
+        onchange="toggleService(${s.id})">
+
+      <div class="service-name">${index + 1}- ${s.name}</div>
+
+      <input type="number" min="1" value="${s.qty}"
+        onchange="changeQty(${s.id}, this.value)">
+
+      <div class="price">${formatPrice(s.price * s.qty)} ریال</div>
     `;
+
+    list.appendChild(row);
   });
 
-  document.getElementById("total").innerText = total.toLocaleString();
-  localStorage.setItem("products", JSON.stringify(products));
+  totalEl.textContent = formatPrice(getTotal()) + " ریال";
 }
 
-function toggle(i) {
-  products[i].checked = !products[i].checked;
+// =====================
+// Actions
+// =====================
+function toggleService(id) {
+  const s = services.find(x => x.id === id);
+  s.checked = !s.checked;
   render();
 }
 
-function qty(i, n) {
-  products[i].qty = Math.max(1, products[i].qty + n);
+function changeQty(id, value) {
+  const s = services.find(x => x.id === id);
+  s.qty = Number(value) || 1;
   render();
 }
 
 function moveUp(i) {
   if (i === 0) return;
-  [products[i], products[i - 1]] = [products[i - 1], products[i]];
+  [services[i - 1], services[i]] = [services[i], services[i - 1]];
   render();
 }
 
 function moveDown(i) {
-  if (i === products.length - 1) return;
-  [products[i], products[i + 1]] = [products[i + 1], products[i]];
+  if (i === services.length - 1) return;
+  [services[i + 1], services[i]] = [services[i], services[i + 1]];
   render();
 }
 
+// =====================
+// Issue Invoice
+// =====================
 function issueInvoice() {
-  const items = products.filter(p => p.checked);
-  if (!items.length) return alert("هیچ خدمتی انتخاب نشده");
+  if (getTotal() === 0) {
+    alert("هیچ خدمتی انتخاب نشده");
+    return;
+  }
 
-  history.unshift({
+  const invoice = {
     number: invoiceNumber,
     date: new Date().toLocaleDateString("fa-IR"),
-    total: items.reduce((s, p) => s + p.price * p.qty, 0)
-  });
+    items: services.filter(s => s.checked),
+    total: getTotal()
+  };
+
+  history.unshift(invoice);
+  localStorage.setItem("invoiceHistory", JSON.stringify(history));
 
   invoiceNumber++;
   localStorage.setItem("invoiceNumber", invoiceNumber);
-  localStorage.setItem("history", JSON.stringify(history));
 
-  // 🔁 ریست کامل
-  products.forEach(p => {
-    p.checked = false;
-    p.qty = 1;
+  // ریست تیک و تعداد
+  services.forEach(s => {
+    s.checked = false;
+    s.qty = 1;
   });
 
   renderHistory();
   render();
 }
 
+// =====================
+// History
+// =====================
 function renderHistory() {
-  const h = document.getElementById("history");
-  h.innerHTML = "";
-  history.forEach(i => {
-    h.innerHTML += `
-      <div class="history-item">
-        فاکتور #${i.number} | ${i.date} | ${i.total.toLocaleString()} ریال
-      </div>
+  const box = document.getElementById("history");
+  box.innerHTML = "";
+
+  history.forEach(inv => {
+    const div = document.createElement("div");
+    div.className = "history-item";
+
+    div.innerHTML = `
+      <div>فاکتور #${inv.number}</div>
+      <div>${inv.date}</div>
+      <div>${formatPrice(inv.total)} ریال</div>
     `;
+
+    box.appendChild(div);
   });
 }
 
+// =====================
+// Init
+// =====================
 render();
 renderHistory();
