@@ -1,36 +1,62 @@
-class SalesSystem {
+class ServiceManagementSystem {
     constructor() {
-        this.products = JSON.parse(localStorage.getItem("products")) || [
-            { id: 1, name: "پیچ", price: 10000, stock: 50 },
-            { id: 2, name: "مهره", price: 8000, stock: 80 },
-            { id: 3, name: "بلبرینگ", price: 120000, stock: 15 }
+        this.services = JSON.parse(localStorage.getItem("services")) || [
+            { 
+                id: 1, 
+                name: "طراحی وبسایت", 
+                price: 5000000, 
+                description: "طراحی و توسعه وبسایت اختصاصی",
+                category: "طراحی"
+            },
+            { 
+                id: 2, 
+                name: "مشاوره فنی", 
+                price: 800000, 
+                description: "مشاوره تخصصی در زمینه فناوری اطلاعات",
+                category: "مشاوره"
+            },
+            { 
+                id: 3, 
+                name: "پشتیبانی ماهانه", 
+                price: 1000000, 
+                description: "پشتیبانی و نگهداری ماهانه سیستم",
+                category: "پشتیبانی"
+            }
         ];
         this.invoices = JSON.parse(localStorage.getItem("invoices")) || [];
         this.invoiceNumber = Number(localStorage.getItem("invoiceNumber")) || 1;
-        this.container = document.getElementById("products");
-        this.init();
+        this.container = document.getElementById("services");
     }
 
     init() {
-        this.renderProducts();
+        this.renderServices();
         this.renderHistory();
         this.setupEventListeners();
+        this.setupGlobalFunctions();
     }
 
     setupEventListeners() {
-        // رویداد کلیک برای دکمه افزودن محصول
-        document.getElementById('addProductBtn').addEventListener('click', () => {
-            this.addProduct();
-        });
+        // رویداد کلیک برای دکمه افزودن سرویس
+        const addServiceBtn = document.getElementById('addServiceBtn');
+        if (addServiceBtn) {
+            addServiceBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.addService();
+            });
+        }
 
         // رویداد کلیک برای دکمه صدور فاکتور
-        document.getElementById('generateInvoiceBtn').addEventListener('click', () => {
-            this.generateInvoice();
-        });
+        const generateInvoiceBtn = document.getElementById('generateInvoiceBtn');
+        if (generateInvoiceBtn) {
+            generateInvoiceBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.generateInvoice();
+            });
+        }
 
         // رویداد input برای محاسبه خودکار جمع کل
         document.addEventListener('input', (e) => {
-            if (e.target.id.startsWith('qty-') || e.target.id.startsWith('price-')) {
+            if (e.target.id && (e.target.id.startsWith('qty-') || e.target.id.startsWith('price-'))) {
                 this.calculateTotal();
             }
         });
@@ -42,34 +68,67 @@ class SalesSystem {
             }
         });
 
-        // رویداد keypress برای Enter در فیلدهای محصول جدید
-        document.getElementById('newName').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.addProduct();
-        });
-        document.getElementById('newPrice').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.addProduct();
-        });
-        document.getElementById('newStock').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.addProduct();
-        });
+        // رویداد keypress برای Enter در فیلدهای سرویس جدید
+        const newServiceName = document.getElementById('newServiceName');
+        if (newServiceName) {
+            newServiceName.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.addService();
+                }
+            });
+        }
+
+        const newServicePrice = document.getElementById('newServicePrice');
+        if (newServicePrice) {
+            newServicePrice.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.addService();
+                }
+            });
+        }
 
         // رویداد keypress برای Enter در فیلدهای مشتری
-        document.getElementById('customerName').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.generateInvoice();
-        });
-        document.getElementById('customerPhone').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.generateInvoice();
-        });
+        const customerName = document.getElementById('customerName');
+        if (customerName) {
+            customerName.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.generateInvoice();
+                }
+            });
+        }
+
+        const customerPhone = document.getElementById('customerPhone');
+        if (customerPhone) {
+            customerPhone.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.generateInvoice();
+                }
+            });
+        }
+    }
+
+    setupGlobalFunctions() {
+        // تنظیم توابع جهانی
+        window.serviceSystem = this;
+        window.clearAllData = () => this.clearAllData();
+        window.exportData = () => this.exportData();
+        window.importData = () => this.openImportDialog();
     }
 
     save() {
-        localStorage.setItem("products", JSON.stringify(this.products));
+        localStorage.setItem("services", JSON.stringify(this.services));
         localStorage.setItem("invoices", JSON.stringify(this.invoices));
         localStorage.setItem("invoiceNumber", this.invoiceNumber);
     }
 
     showAlert(message, type = 'success') {
         const alert = document.getElementById('alert');
+        if (!alert) return;
+        
         alert.textContent = message;
         alert.className = `alert ${type}`;
         alert.classList.add('show');
@@ -79,104 +138,149 @@ class SalesSystem {
         }, 3000);
     }
 
-    renderProducts() {
+    renderServices() {
+        if (!this.container) return;
+        
         this.container.innerHTML = '';
         
-        if (this.products.length === 0) {
+        if (this.services.length === 0) {
             this.container.innerHTML = `
                 <div class="empty-state">
-                    <i class='bx bx-package'></i>
-                    <p>هیچ محصولی ثبت نشده است</p>
+                    <i class='bx bx-list-ul'></i>
+                    <p>هیچ سرویسی ثبت نشده است</p>
+                    <p style="font-size: 0.9rem; margin-top: 8px;">برای شروع، اولین سرویس خود را اضافه کنید</p>
                 </div>
             `;
             return;
         }
         
-        this.products.forEach((product, index) => {
-            const productElement = document.createElement('div');
-            productElement.className = 'product-item';
+        this.services.forEach((service, index) => {
+            const serviceElement = document.createElement('div');
+            serviceElement.className = 'service-item';
             
-            productElement.innerHTML = `
-                <div class="product-info">
-                    <h4>${product.name}</h4>
-                    <small>موجودی: ${product.stock.toLocaleString('fa-IR')} عدد</small>
+            serviceElement.innerHTML = `
+                <div class="service-info">
+                    <h4>${service.name}</h4>
+                    <div class="service-price">${service.price.toLocaleString('fa-IR')} ریال</div>
+                    ${service.description ? `<div class="description">${service.description}</div>` : ''}
                 </div>
                 <input type="number" 
                        id="price-${index}" 
-                       class="product-input" 
-                       value="${product.price}" 
+                       class="service-input" 
+                       value="${service.price}" 
                        min="0"
                        placeholder="قیمت (ریال)">
                 <input type="number" 
                        id="qty-${index}" 
-                       class="product-input" 
+                       class="service-input" 
                        value="0" 
-                       min="0" 
-                       max="${product.stock}"
+                       min="0"
                        placeholder="تعداد">
                 <input type="checkbox" 
-                       class="product-checkbox" 
-                       ${product.stock === 0 ? 'disabled' : ''}>
+                       class="service-checkbox">
+                <div class="service-actions" style="display: none;">
+                    <button type="button" class="action-btn delete-btn" data-service-id="${service.id}">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                </div>
             `;
             
-            this.container.appendChild(productElement);
+            // اضافه کردن event listener برای دکمه حذف
+            const deleteBtn = serviceElement.querySelector('.action-btn.delete-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const serviceId = parseInt(deleteBtn.getAttribute('data-service-id'));
+                    this.deleteService(serviceId);
+                });
+            }
+            
+            // نمایش دکمه‌های مدیریت در صورت hover
+            serviceElement.addEventListener('mouseenter', () => {
+                const actions = serviceElement.querySelector('.service-actions');
+                if (actions) actions.style.display = 'block';
+            });
+            
+            serviceElement.addEventListener('mouseleave', () => {
+                const actions = serviceElement.querySelector('.service-actions');
+                if (actions) actions.style.display = 'none';
+            });
+            
+            this.container.appendChild(serviceElement);
         });
         
         this.calculateTotal();
     }
 
-    addProduct() {
-        const name = document.getElementById("newName").value.trim();
-        const price = Number(document.getElementById("newPrice").value);
-        const stock = Number(document.getElementById("newStock").value);
+    addService() {
+        const nameInput = document.getElementById("newServiceName");
+        const priceInput = document.getElementById("newServicePrice");
+        const descriptionInput = document.getElementById("newServiceDescription");
+        
+        if (!nameInput || !priceInput || !descriptionInput) {
+            this.showAlert("خطا در بارگذاری فرم!", "error");
+            return;
+        }
+        
+        const name = nameInput.value.trim();
+        const price = Number(priceInput.value);
+        const description = descriptionInput.value.trim();
 
         if (!name) {
-            this.showAlert("نام محصول الزامی است!", "error");
-            document.getElementById("newName").focus();
+            this.showAlert("نام سرویس الزامی است!", "error");
+            nameInput.focus();
             return;
         }
 
         if (price <= 0 || isNaN(price)) {
             this.showAlert("قیمت باید بیشتر از صفر باشد!", "error");
-            document.getElementById("newPrice").focus();
+            priceInput.focus();
             return;
         }
 
-        if (stock < 0 || isNaN(stock)) {
-            this.showAlert("موجودی معتبر وارد کنید!", "error");
-            document.getElementById("newStock").focus();
-            return;
-        }
-
-        const newProduct = {
+        const newService = {
             id: Date.now(),
             name,
             price: price,
-            stock: stock
+            description: description || "",
+            category: "عمومی"
         };
 
-        this.products.push(newProduct);
+        this.services.push(newService);
         this.save();
-        this.renderProducts();
+        this.renderServices();
 
         // پاک کردن فیلدها
-        document.getElementById("newName").value = "";
-        document.getElementById("newPrice").value = "";
-        document.getElementById("newStock").value = "";
+        nameInput.value = "";
+        priceInput.value = "";
+        descriptionInput.value = "";
 
         // فوکوس روی فیلد نام
-        document.getElementById("newName").focus();
+        nameInput.focus();
 
-        this.showAlert("محصول با موفقیت اضافه شد!");
+        this.showAlert("سرویس با موفقیت اضافه شد!");
+    }
+
+    deleteService(serviceId) {
+        if (confirm("آیا از حذف این سرویس اطمینان دارید؟")) {
+            const index = this.services.findIndex(service => service.id === serviceId);
+            if (index !== -1) {
+                this.services.splice(index, 1);
+                this.save();
+                this.renderServices();
+                this.showAlert("سرویس با موفقیت حذف شد!");
+            }
+        }
     }
 
     calculateTotal() {
         let total = 0;
 
-        this.products.forEach((product, index) => {
+        this.services.forEach((service, index) => {
             const qtyInput = document.getElementById(`qty-${index}`);
             const priceInput = document.getElementById(`price-${index}`);
-            const checkbox = document.querySelectorAll('.product-checkbox')[index];
+            const checkbox = document.querySelectorAll('.service-checkbox')[index];
             
             if (qtyInput && priceInput && checkbox) {
                 const qty = Number(qtyInput.value) || 0;
@@ -187,18 +291,14 @@ class SalesSystem {
                     qtyInput.value = 0;
                 }
                 
-                if (qty > product.stock) {
-                    qtyInput.value = product.stock;
-                }
-                
                 // اعتبارسنجی قیمت
                 if (price < 0) {
-                    priceInput.value = product.price;
+                    priceInput.value = service.price;
                 }
                 
-                // به‌روزرسانی قیمت محصول در صورت تغییر
-                if (product.price !== price && price > 0) {
-                    product.price = price;
+                // به‌روزرسانی قیمت سرویس در صورت تغییر
+                if (service.price !== price && price > 0) {
+                    service.price = price;
                     this.save();
                 }
                 
@@ -209,55 +309,54 @@ class SalesSystem {
         });
 
         const totalElement = document.getElementById("total");
-        totalElement.innerHTML = `
-            <i class='bx bx-calculator'></i>
-            جمع کل: ${total.toLocaleString('fa-IR')} ریال
-        `;
+        if (totalElement) {
+            totalElement.innerHTML = `
+                <i class='bx bx-calculator'></i>
+                جمع کل: ${total.toLocaleString('fa-IR')} ریال
+            `;
+        }
     }
 
     generateInvoice() {
-        const name = document.getElementById("customerName").value.trim();
-        const phone = document.getElementById("customerPhone").value.trim();
+        const nameInput = document.getElementById("customerName");
+        const phoneInput = document.getElementById("customerPhone");
+        const notesInput = document.getElementById("customerNotes");
+        
+        if (!nameInput || !phoneInput || !notesInput) {
+            this.showAlert("خطا در بارگذاری فرم مشتری!", "error");
+            return;
+        }
+        
+        const name = nameInput.value.trim();
+        const phone = phoneInput.value.trim();
+        const notes = notesInput.value.trim();
         const items = [];
         let total = 0;
-        let hasError = false;
 
-        this.products.forEach((product, index) => {
+        this.services.forEach((service, index) => {
             const qtyInput = document.getElementById(`qty-${index}`);
-            const checkbox = document.querySelectorAll('.product-checkbox')[index];
+            const checkbox = document.querySelectorAll('.service-checkbox')[index];
             
             if (!qtyInput || !checkbox) return;
             
             const qty = Number(qtyInput.value) || 0;
 
             if (checkbox.checked && qty > 0) {
-                if (product.stock !== undefined && qty > product.stock) {
-                    this.showAlert(`موجودی ${product.name} کافی نیست! (موجودی: ${product.stock} عدد)`, "error");
-                    hasError = true;
-                    return;
-                }
-
-                const subtotal = qty * product.price;
+                const subtotal = qty * service.price;
                 total += subtotal;
 
                 items.push({
-                    name: product.name,
+                    name: service.name,
                     quantity: qty,
-                    price: product.price,
+                    price: service.price,
+                    description: service.description,
                     subtotal
                 });
-
-                // به‌روزرسانی موجودی
-                if (product.stock !== undefined) {
-                    product.stock -= qty;
-                }
             }
         });
 
-        if (hasError) return;
-
         if (items.length === 0) {
-            this.showAlert("لطفا حداقل یک محصول انتخاب کنید!", "error");
+            this.showAlert("لطفا حداقل یک سرویس انتخاب کنید!", "error");
             return;
         }
 
@@ -265,6 +364,7 @@ class SalesSystem {
             number: this.invoiceNumber++,
             customer: name || "مشتری ناشناس",
             phone: phone || "ثبت نشده",
+            notes: notes || "",
             date: new Date().toLocaleString('fa-IR'),
             items,
             total
@@ -273,26 +373,28 @@ class SalesSystem {
         this.invoices.unshift(invoice);
         this.save();
         this.renderHistory();
-        this.renderProducts();
 
-        // پاک کردن فیلدهای مشتری
-        document.getElementById("customerName").value = "";
-        document.getElementById("customerPhone").value = "";
+        // پاک کردن فیلدهای مشتری و توضیحات
+        nameInput.value = "";
+        phoneInput.value = "";
+        notesInput.value = "";
 
-        // پاک کردن مقادیر محصولات
-        this.products.forEach((product, index) => {
+        // پاک کردن مقادیر سرویس‌ها
+        this.services.forEach((service, index) => {
             const qtyInput = document.getElementById(`qty-${index}`);
-            const checkbox = document.querySelectorAll('.product-checkbox')[index];
+            const checkbox = document.querySelectorAll('.service-checkbox')[index];
             if (qtyInput) qtyInput.value = 0;
             if (checkbox) checkbox.checked = false;
         });
 
         this.calculateTotal();
-        this.showAlert(`فاکتور شماره ${invoice.number} با موفقیت صادر شد!`);
+        this.showAlert(`فاکتور خدمات شماره ${invoice.number} با موفقیت صادر شد!`);
     }
 
     renderHistory() {
         const historyContainer = document.getElementById("history");
+        if (!historyContainer) return;
+        
         historyContainer.innerHTML = '';
 
         if (this.invoices.length === 0) {
@@ -300,6 +402,7 @@ class SalesSystem {
                 <div class="empty-state">
                     <i class='bx bx-info-circle'></i>
                     <p>هیچ فاکتوری ثبت نشده است</p>
+                    <p style="font-size: 0.9rem; margin-top: 8px;">پس از صدور فاکتور، تاریخچه اینجا نمایش داده می‌شود</p>
                 </div>
             `;
             return;
@@ -311,7 +414,7 @@ class SalesSystem {
 
             invoiceElement.innerHTML = `
                 <div class="invoice-header">
-                    <strong>فاکتور #${invoice.number}</strong>
+                    <strong>فاکتور خدمات #${invoice.number}</strong>
                     <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px;">
                         <i class='bx bx-calendar'></i> ${invoice.date}
                     </div>
@@ -320,12 +423,24 @@ class SalesSystem {
                     <div><i class='bx bx-user'></i> ${invoice.customer}</div>
                     <div><i class='bx bx-phone'></i> ${invoice.phone}</div>
                 </div>
+                ${invoice.notes ? `
+                    <div class="invoice-notes">
+                        <i class='bx bx-note'></i> ${invoice.notes}
+                    </div>
+                ` : ''}
                 <div class="invoice-items">
                     ${invoice.items.map(item => `
                         <div class="invoice-item-row">
-                            <span>${item.name}</span>
-                            <span>${item.quantity} عدد × ${item.price.toLocaleString('fa-IR')} ریال</span>
-                            <span>${item.subtotal.toLocaleString('fa-IR')} ریال</span>
+                            <div style="text-align: right; flex: 1;">
+                                <div style="color: var(--text-primary); font-weight: 500;">${item.name}</div>
+                                ${item.description ? `<div style="font-size: 0.8rem; color: var(--text-secondary);">${item.description}</div>` : ''}
+                            </div>
+                            <div style="text-align: left; flex: 1;">
+                                ${item.quantity} عدد × ${item.price.toLocaleString('fa-IR')} ریال
+                            </div>
+                            <div style="text-align: left; flex: 1; color: var(--accent-success); font-weight: bold;">
+                                ${item.subtotal.toLocaleString('fa-IR')} ریال
+                            </div>
                         </div>
                     `).join('')}
                 </div>
@@ -341,13 +456,13 @@ class SalesSystem {
 
     // متدهای کمکی برای مدیریت بهتر
     clearAllData() {
-        if (confirm("آیا از پاک کردن تمام داده‌ها اطمینان دارید؟ این عمل قابل بازگشت نیست.")) {
+        if (confirm("آیا از پاک کردن تمام داده‌ها اطمینان دارید؟\nاین عمل قابل بازگشت نیست.")) {
             localStorage.clear();
-            this.products = [];
+            this.services = [];
             this.invoices = [];
             this.invoiceNumber = 1;
             this.save();
-            this.renderProducts();
+            this.renderServices();
             this.renderHistory();
             this.showAlert("تمامی داده‌ها با موفقیت پاک شدند.");
         }
@@ -355,29 +470,120 @@ class SalesSystem {
 
     exportData() {
         const data = {
-            products: this.products,
+            services: this.services,
             invoices: this.invoices,
-            invoiceNumber: this.invoiceNumber
+            invoiceNumber: this.invoiceNumber,
+            exportDate: new Date().toISOString(),
+            systemType: "Service Management System"
         };
         
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `sales-system-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `service-system-backup-${new Date().toISOString().split('T')[0]}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        this.showAlert("داده‌ها با موفقیت دانلود شدند.");
+        this.showAlert("داده‌های سیستم خدمات با موفقیت دانلود شدند.");
+    }
+
+    openImportDialog() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.style.display = 'none';
+        
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                this.importData(file);
+            }
+        };
+        
+        document.body.appendChild(input);
+        input.click();
+        document.body.removeChild(input);
+    }
+
+    importData(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                
+                if (data.systemType !== "Service Management System") {
+                    this.showAlert("فایل وارد شده معتبر نیست!", "error");
+                    return;
+                }
+                
+                this.services = data.services || [];
+                this.invoices = data.invoices || [];
+                this.invoiceNumber = data.invoiceNumber || 1;
+                
+                this.save();
+                this.renderServices();
+                this.renderHistory();
+                
+                this.showAlert("داده‌ها با موفقیت وارد شدند!");
+            } catch (error) {
+                this.showAlert("خطا در خواندن فایل!", "error");
+                console.error(error);
+            }
+        };
+        reader.readAsText(file);
     }
 }
 
-// ایجاد نمونه از سیستم فروش
-const salesSystem = new SalesSystem();
-
-// اضافه کردن توابع به window برای دسترسی آسان (اختیاری)
-window.salesSystem = salesSystem;
-window.clearAllData = () => salesSystem.clearAllData();
-window.exportData = () => salesSystem.exportData();
+// ایجاد نمونه از سیستم مدیریت خدمات و مقداردهی اولیه
+document.addEventListener('DOMContentLoaded', function() {
+    const serviceSystem = new ServiceManagementSystem();
+    serviceSystem.init();
+    
+    // ایجاد دکمه‌های مدیریت در پایین صفحه
+    const centerContainer = document.querySelector('.center-container');
+    if (centerContainer) {
+        const actionsContainer = document.createElement('div');
+        actionsContainer.className = 'actions-container';
+        actionsContainer.innerHTML = `
+            <button type="button" class="action-btn" id="exportBtn">
+                <i class='bx bx-export'></i> خروجی گرفتن
+            </button>
+            <button type="button" class="action-btn" id="importBtn">
+                <i class='bx bx-import'></i> وارد کردن
+            </button>
+            <button type="button" class="action-btn delete-btn" id="clearBtn">
+                <i class='bx bx-trash'></i> پاک کردن همه داده‌ها
+            </button>
+        `;
+        
+        // اضافه کردن event listeners به دکمه‌های مدیریت
+        const exportBtn = actionsContainer.querySelector('#exportBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                serviceSystem.exportData();
+            });
+        }
+        
+        const importBtn = actionsContainer.querySelector('#importBtn');
+        if (importBtn) {
+            importBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                serviceSystem.openImportDialog();
+            });
+        }
+        
+        const clearBtn = actionsContainer.querySelector('#clearBtn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                serviceSystem.clearAllData();
+            });
+        }
+        
+        centerContainer.appendChild(actionsContainer);
+    }
+});
