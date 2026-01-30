@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سیستم فروش حرفه‌ای</title>
+    <title>  تراشکاری عساکره </title>
     <style>
         :root {
             --bg-primary: #0f0f0f;
@@ -32,8 +32,11 @@
             font-family: var(--font-family);
             line-height: 1.6;
             padding: var(--spacing-md);
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         h2 {
@@ -41,6 +44,7 @@
             margin-bottom: var(--spacing-lg);
             color: var(--accent-primary);
             font-size: 1.8rem;
+            width: 100%;
         }
 
         .container {
@@ -48,6 +52,7 @@
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: var(--spacing-md);
             margin-bottom: var(--spacing-lg);
+            width: 100%;
         }
 
         .card {
@@ -56,6 +61,7 @@
             padding: var(--spacing-md);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             transition: transform 0.2s ease;
+            text-align: center;
         }
 
         .card:hover {
@@ -65,6 +71,7 @@
         .card-title {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: var(--spacing-sm);
             margin-bottom: var(--spacing-md);
             color: var(--accent-primary);
@@ -77,6 +84,7 @@
 
         .form-group {
             margin-bottom: var(--spacing-md);
+            text-align: center;
         }
 
         .form-label {
@@ -95,6 +103,7 @@
             color: var(--text-primary);
             font-size: 1rem;
             transition: all 0.3s ease;
+            text-align: center;
         }
 
         .form-input:focus {
@@ -153,6 +162,11 @@
             padding: var(--spacing-md);
             border-radius: 8px;
             border: 1px solid #333;
+            text-align: center;
+        }
+
+        .product-info {
+            text-align: center;
         }
 
         .product-info h4 {
@@ -179,6 +193,7 @@
             width: 20px;
             height: 20px;
             cursor: pointer;
+            margin: 0 auto;
         }
 
         .total-section {
@@ -191,12 +206,14 @@
             font-size: 1.2rem;
             font-weight: bold;
             box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
+            width: 100%;
         }
 
         .history-section {
             max-height: 400px;
             overflow-y: auto;
             padding-right: var(--spacing-sm);
+            width: 100%;
         }
 
         .history-section::-webkit-scrollbar {
@@ -219,12 +236,14 @@
             padding: var(--spacing-md);
             margin-bottom: var(--spacing-md);
             border-right: 4px solid var(--accent-primary);
+            text-align: center;
         }
 
         .invoice-header {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             margin-bottom: var(--spacing-sm);
             padding-bottom: var(--spacing-sm);
             border-bottom: 1px solid #333;
@@ -232,22 +251,25 @@
 
         .invoice-items {
             margin: var(--spacing-sm) 0;
-            padding-right: var(--spacing-md);
         }
 
         .invoice-item-row {
             display: flex;
             justify-content: space-between;
-            padding: 4px 0;
+            align-items: center;
+            padding: 8px 0;
             color: var(--text-secondary);
             font-size: 0.9rem;
+            border-bottom: 1px dashed #333;
         }
 
         .invoice-total {
-            text-align: left;
+            text-align: center;
             font-weight: bold;
             color: var(--accent-primary);
-            margin-top: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+            padding-top: var(--spacing-sm);
+            border-top: 2px solid var(--accent-primary);
         }
 
         .alert {
@@ -262,6 +284,7 @@
             transform: translateX(150%);
             transition: transform 0.3s ease;
             z-index: 1000;
+            text-align: center;
         }
 
         .alert.show {
@@ -272,6 +295,14 @@
             background: #e74c3c;
         }
 
+        /* Centering all elements */
+        .center-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
         @media (max-width: 768px) {
             .container {
                 grid-template-columns: 1fr;
@@ -280,81 +311,86 @@
             .product-item {
                 grid-template-columns: 1fr;
                 gap: var(--spacing-md);
+                text-align: center;
             }
             
             .product-input {
-                text-align: right;
+                text-align: center;
+            }
+            
+            .invoice-item-row {
+                flex-direction: column;
+                gap: 4px;
+                text-align: center;
             }
         }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
 </head>
 <body>
-    <h2><i class='bx bx-store'></i> سیستم فروش حرفه‌ای</h2>
+    <div class="center-container">
+        <h2><i class='bx bx-store'></i> سیستم فروش حرفه‌ای</h2>
 
-    <div class="container">
-        <div class="card">
+        <div class="container">
+            <div class="card">
+                <div class="card-title">
+                    <i class='bx bx-user'></i>
+                    اطلاعات مشتری
+                </div>
+                <div class="form-group">
+                    <input type="text" id="customerName" class="form-input" placeholder="نام مشتری">
+                </div>
+                <div class="form-group">
+                    <input type="tel" id="customerPhone" class="form-input" placeholder="شماره تماس">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class='bx bx-plus-circle'></i>
+                    افزودن محصول جدید
+                </div>
+                <div class="form-group">
+                    <input type="text" id="newName" class="form-input" placeholder="نام محصول">
+                </div>
+                <div class="form-group">
+                    <input type="number" id="newPrice" class="form-input" placeholder="قیمت (ریال)">
+                </div>
+                <div class="form-group">
+                    <input type="number" id="newStock" class="form-input" placeholder="موجودی اولیه">
+                </div>
+                <button class="btn" onclick="addProduct()">
+                    <i class='bx bx-plus btn-icon'></i>
+                    افزودن محصول
+                </button>
+            </div>
+        </div>
+
+        <div class="card" style="width: 100%;">
             <div class="card-title">
-                <i class='bx bx-user'></i>
-                اطلاعات مشتری
+                <i class='bx bx-package'></i>
+                لیست محصولات
             </div>
-            <div class="form-group">
-                <label class="form-label">نام مشتری</label>
-                <input type="text" id="customerName" class="form-input" placeholder="نام کامل مشتری">
-            </div>
-            <div class="form-group">
-                <label class="form-label">شماره تماس</label>
-                <input type="tel" id="customerPhone" class="form-input" placeholder="09xxxxxxxxx">
-            </div>
+            <div id="products" class="product-grid"></div>
         </div>
 
-        <div class="card">
+        <div id="total" class="total-section">
+            <i class='bx bx-calculator'></i>
+            جمع کل: 0 ریال
+        </div>
+
+        <button class="btn" onclick="generateInvoice()" style="width: 100%; margin-bottom: var(--spacing-lg);">
+            <i class='bx bx-receipt btn-icon'></i>
+            صدور فاکتور
+        </button>
+
+        <div class="card" style="width: 100%;">
             <div class="card-title">
-                <i class='bx bx-plus-circle'></i>
-                افزودن محصول جدید
+                <i class='bx bx-history'></i>
+                تاریخچه فروش
             </div>
-            <div class="form-group">
-                <label class="form-label">نام محصول</label>
-                <input type="text" id="newName" class="form-input" placeholder="نام محصول">
-            </div>
-            <div class="form-group">
-                <label class="form-label">قیمت (تومان)</label>
-                <input type="number" id="newPrice" class="form-input" placeholder="قیمت واحد">
-            </div>
-            <div class="form-group">
-                <label class="form-label">موجودی اولیه</label>
-                <input type="number" id="newStock" class="form-input" placeholder="تعداد موجودی">
-            </div>
-            <button class="btn" onclick="addProduct()">
-                <i class='bx bx-plus btn-icon'></i>
-                افزودن محصول
-            </button>
+            <div id="history" class="history-section"></div>
         </div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">
-            <i class='bx bx-package'></i>
-            لیست محصولات
-        </div>
-        <div id="products" class="product-grid"></div>
-    </div>
-
-    <div id="total" class="total-section">
-        جمع کل: 0 تومان
-    </div>
-
-    <button class="btn" onclick="generateInvoice()" style="margin-bottom: var(--spacing-lg);">
-        <i class='bx bx-receipt btn-icon'></i>
-        صدور فاکتور
-    </button>
-
-    <div class="card">
-        <div class="card-title">
-            <i class='bx bx-history'></i>
-            تاریخچه فروش
-        </div>
-        <div id="history" class="history-section"></div>
     </div>
 
     <div id="alert" class="alert"></div>
@@ -363,9 +399,9 @@
         class SalesSystem {
             constructor() {
                 this.products = JSON.parse(localStorage.getItem("products")) || [
-                    { id: 1, name: "پیچ", price: 1000, stock: 50 },
-                    { id: 2, name: "مهره", price: 800, stock: 80 },
-                    { id: 3, name: "بلبرینگ", price: 12000, stock: 15 }
+                    { id: 1, name: "پیچ", price: 10000, stock: 50 }, // 1000 تومان = 10000 ریال
+                    { id: 2, name: "مهره", price: 8000, stock: 80 }, // 800 تومان = 8000 ریال
+                    { id: 3, name: "بلبرینگ", price: 120000, stock: 15 } // 12000 تومان = 120000 ریال
                 ];
                 this.invoices = JSON.parse(localStorage.getItem("invoices")) || [];
                 this.invoiceNumber = Number(localStorage.getItem("invoiceNumber")) || 1;
@@ -420,22 +456,24 @@
                     productElement.innerHTML = `
                         <div class="product-info">
                             <h4>${product.name}</h4>
-                            <small>موجودی: ${product.stock.toLocaleString()} عدد</small>
+                            ${product.stock !== undefined ? `<small>موجودی: ${product.stock.toLocaleString()} عدد</small>` : ''}
                         </div>
                         <input type="number" 
                                id="price-${index}" 
                                class="product-input" 
                                value="${product.price}" 
-                               min="0">
+                               min="0"
+                               placeholder="قیمت (ریال)">
                         <input type="number" 
                                id="qty-${index}" 
                                class="product-input" 
                                value="0" 
                                min="0" 
-                               max="${product.stock}">
+                               ${product.stock !== undefined ? `max="${product.stock}"` : ''}
+                               placeholder="تعداد">
                         <input type="checkbox" 
                                class="product-checkbox" 
-                               ${product.stock === 0 ? 'disabled' : ''}>
+                               ${product.stock === 0 || product.stock === undefined ? 'disabled' : ''}>
                     `;
                     
                     this.container.appendChild(productElement);
@@ -459,16 +497,16 @@
                     return;
                 }
 
-                if (stock < 0) {
-                    this.showAlert("موجودی نمی‌تواند منفی باشد!", "error");
+                if (stock < 0 || isNaN(stock)) {
+                    this.showAlert("موجودی معتبر وارد کنید!", "error");
                     return;
                 }
 
                 const newProduct = {
                     id: Date.now(),
                     name,
-                    price,
-                    stock
+                    price: price, // ذخیره به ریال
+                    stock: stock
                 };
 
                 this.products.push(newProduct);
@@ -486,19 +524,30 @@
                 let total = 0;
 
                 this.products.forEach((product, index) => {
-                    const qty = Number(document.getElementById(`qty-${index}`).value) || 0;
-                    const price = Number(document.getElementById(`price-${index}`).value) || 0;
+                    const qtyInput = document.getElementById(`qty-${index}`);
+                    const priceInput = document.getElementById(`price-${index}`);
                     const checkbox = document.querySelectorAll('.product-checkbox')[index];
-
-                    if (checkbox && checkbox.checked) {
-                        total += qty * price;
+                    
+                    if (qtyInput && priceInput && checkbox) {
+                        const qty = Number(qtyInput.value) || 0;
+                        const price = Number(priceInput.value) || 0;
+                        
+                        // به‌روزرسانی قیمت محصول
+                        if (product.price !== price) {
+                            product.price = price;
+                            this.save();
+                        }
+                        
+                        if (checkbox.checked) {
+                            total += qty * price;
+                        }
                     }
                 });
 
                 const totalElement = document.getElementById("total");
                 totalElement.innerHTML = `
                     <i class='bx bx-calculator'></i>
-                    جمع کل: ${total.toLocaleString()} تومان
+                    جمع کل: ${total.toLocaleString()} ریال
                 `;
             }
 
@@ -510,11 +559,15 @@
                 let hasError = false;
 
                 this.products.forEach((product, index) => {
-                    const qty = Number(document.getElementById(`qty-${index}`).value) || 0;
+                    const qtyInput = document.getElementById(`qty-${index}`);
                     const checkbox = document.querySelectorAll('.product-checkbox')[index];
+                    
+                    if (!qtyInput || !checkbox) return;
+                    
+                    const qty = Number(qtyInput.value) || 0;
 
-                    if (checkbox && checkbox.checked && qty > 0) {
-                        if (qty > product.stock) {
+                    if (checkbox.checked && qty > 0) {
+                        if (product.stock !== undefined && qty > product.stock) {
                             this.showAlert(`موجودی ${product.name} کافی نیست!`, "error");
                             hasError = true;
                             return;
@@ -530,7 +583,10 @@
                             subtotal
                         });
 
-                        product.stock -= qty;
+                        // به‌روزرسانی موجودی
+                        if (product.stock !== undefined) {
+                            product.stock -= qty;
+                        }
                     }
                 });
 
@@ -581,29 +637,27 @@
 
                     invoiceElement.innerHTML = `
                         <div class="invoice-header">
-                            <div>
-                                <strong>فاکتور #${invoice.number}</strong>
-                                <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px;">
-                                    ${invoice.date}
-                                </div>
+                            <strong>فاکتور #${invoice.number}</strong>
+                            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 8px;">
+                                <i class='bx bx-calendar'></i> ${invoice.date}
                             </div>
-                            <div style="text-align: left;">
-                                <div><i class='bx bx-user'></i> ${invoice.customer}</div>
-                                <div><i class='bx bx-phone'></i> ${invoice.phone}</div>
-                            </div>
+                        </div>
+                        <div style="margin: var(--spacing-md) 0; text-align: center;">
+                            <div><i class='bx bx-user'></i> ${invoice.customer}</div>
+                            <div><i class='bx bx-phone'></i> ${invoice.phone}</div>
                         </div>
                         <div class="invoice-items">
                             ${invoice.items.map(item => `
                                 <div class="invoice-item-row">
                                     <span>${item.name}</span>
-                                    <span>${item.quantity} × ${item.price.toLocaleString()} تومان</span>
-                                    <span>${item.subtotal.toLocaleString()} تومان</span>
+                                    <span>${item.quantity} عدد × ${item.price.toLocaleString()} ریال</span>
+                                    <span>${item.subtotal.toLocaleString()} ریال</span>
                                 </div>
                             `).join('')}
                         </div>
                         <div class="invoice-total">
                             <i class='bx bx-credit-card'></i>
-                            مبلغ نهایی: ${invoice.total.toLocaleString()} تومان
+                            مبلغ نهایی: ${invoice.total.toLocaleString()} ریال
                         </div>
                     `;
 
